@@ -25,7 +25,7 @@ This repository has the following directory structure
 
 ## Training a model using different methods
 
-###Conjugate
+### Conjugate
 A simple sine dataset is created with 1000 data points for training and 200 for testing. 
 `--seed` sets the random seed;
 `--inducing` sets the number of inducing inputs;
@@ -39,7 +39,7 @@ Below is an example:
 python ./conjugate/script.py --seed 0 --inducing 20 --method joint-log-dlm --reg 1.0 --num_samples 10
 ```
 
-###Nonconjugate
+### Nonconjugate
 A simple cosine dataset is created with 1000 data points for training and 200 for testing.
 `--seed` sets the random seed;
 `--inducing` sets the number of inducing inputs;
