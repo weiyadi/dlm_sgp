@@ -129,7 +129,8 @@ def train(model, optimizer, n_iter, verbose=True, name=None, Xn=None, yn=None, t
             if len(losses) > n:
                 last = losses[-n:]
                 if max(last) - min(last) <= tol:
-                    print("Converges at iteration: ", i)
+                    if verbose:
+                        print("Converges at iteration: ", i)
                     break
         if verbose:
             print('Iteration: {0:04d} Loss: {1: .6f}'.format(i, loss.item() / n_train))

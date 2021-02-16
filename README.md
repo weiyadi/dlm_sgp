@@ -25,21 +25,31 @@ This repository has the following directory structure
 
 ## Training a model using different methods
 
-### Conjugate
-A simple sine dataset is created with 1000 data points for training and 200 for testing. 
+### Demonstration of Conjugate Cases
+The file `conjugate/script.py` shows how to apply different algorithms on a dataset. We provide a toy sine dataset for 
+demonstration. And you can implement your own `load_data` method to use your own dataset.
+`--dataset` sets the dataset;
+`--n_train` sets the training size, default 1000;
+`--n_test` sets the test size, default 200;
 `--seed` sets the random seed;
 `--inducing` sets the number of inducing inputs;
 `--method` can be 
 set to `svgp`, `fitc`, `fixed-log-dlm`, `joint-log-dlm`, `fixed-sq-dlm`, `joint-sq-dlm`;
 `--reg` sets the regularization parameter for KL-regularizer;
+`--auto_select_reg` is set when we want to automatically use validate set to select regularization;
 `--num_samples` sets the number of Monte Carlo samples if we want to use biased estimates and is only available for 
 `fixed-log-dlm` and `joint-log-dlm`, when it is set 0, exact computation is used.
-Below is an example:
+Below is an example for fixed regularization:
 ```console
-python ./conjugate/script.py --seed 0 --inducing 20 --method joint-log-dlm --reg 1.0 --num_samples 10
+python ./conjugate/script.py --dataset sine --seed 0 --inducing 20 --method joint-log-dlm --reg 1.0 --num_samples 10
+```
+and an example for automatically select regularization:
+```console
+python ./conjugate/script.py --dataset sine --n_train 100 --seed 0 --inducing 20 --method joint-log-dlm \
+--auto_select_reg
 ```
 
-### Nonconjugate
+### Demonstration of Nonconjugate Cases
 A simple cosine dataset is created with 1000 data points for training and 200 for testing.
 `--seed` sets the random seed;
 `--inducing` sets the number of inducing inputs;
