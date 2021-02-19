@@ -43,14 +43,21 @@ Below is an example for fixed regularization:
 ```console
 python ./conjugate/script.py --dataset sine --seed 0 --inducing 20 --method joint-log-dlm --reg 1.0 --num_samples 10
 ```
-and an example for automatically select regularization:
+and an example for automatically selecting regularization:
 ```console
 python ./conjugate/script.py --dataset sine --n_train 100 --seed 0 --inducing 20 --method joint-log-dlm \
 --auto_select_reg
 ```
+For fixed regularization, the training loss during optimization is printed; 
+For automatically selecting regularization, performance on validate dataset and the best regularization parameter is printed.
+For both cases, the performance on test dataset is printed.
 
 ### Demonstration of Nonconjugate Cases
-A simple cosine dataset is created with 1000 data points for training and 200 for testing.
+A simple cosine dataset is created for demonstration. You can implement the `load_dataset` in 
+`./nonconjugate/script.py`.
+`--dataset` sets the data we would like to use, default is the 'toy' which uses the toy cosine dataset;
+`--n_train` sets the number of training examples;
+`--n_test` sets the number of testing examples;
 `--seed` sets the random seed;
 `--inducing` sets the number of inducing inputs;
 `--likelihood` sets the likelihood type, i.e. `binary`, `poisson_exp`(Poisson likelihood with log link function) or 
@@ -61,14 +68,29 @@ A simple cosine dataset is created with 1000 data points for training and 200 fo
 set to `svgp`, `fixed-dlm`(exact computation if available, otherwise, Monte Carlo estimation), 
 `joint-dlm`, `fixed-dlm-ps`(product sampling), `joint-dlm-ps`;
 `--reg` sets the regularization parameter for KL-regularizer;
+`--auto_select_reg` is set when we want to automatically use validate set to select regularization;
 `--num_samples` sets the number of samples if we want to use biased estimates and is available for all dlm methods.
 `--jitter` is set for smooth-bMC in the paper, 0 means no jitter added.
-Below is an example.
+Below is an example for fixed regularization:
 ```console
 python ./nonconjugate/script.py --seed 0 --inducing 20 --likelihood binary --kern rbf --method joint-dlm \
 --reg 1.0 --num_samples 10 --jitter 1e-4
 ```
-An example script to collect bias statistics for bMC, smooth-bMC and uPS is also included. All gradients are collected
+and an example for automatically selecting the regularization. Notice that dlm with product sampling is slow so we do 
+not recommend using `fixed-dlm-ps` and `joint-dlm-ps`.
+```console
+python ./nonconjugate/script.py --seed 0 --inducing 20 --likelihood binary --kern rbf --method fixed-dlm \
+--num_samples 10 --jitter 1e-4 --auto_select_reg
+```
+
+For fixed regularization, the training loss during optimization is printed; 
+For automatically selecting regularization, performance on validate dataset and the best regularization parameter is printed.
+For both cases, the performance on test dataset is printed.
+
+### Bias Statistics
+An example script to collect bias statistics for bMC, smooth-bMC and uPS is also included.
+Please see the paper for interpretation of the plots and their relation to conditions for convergence.
+All gradients are collected
 based on the toy data with binary likelihood. Notice that uPS is slow so it may take more than 40min to finish.
 ```console
 python ./nonconjugate/collect_gradient_demo.py --method bMC
