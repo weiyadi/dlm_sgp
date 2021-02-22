@@ -64,12 +64,11 @@ A simple cosine dataset is created for demonstration. You can implement the `loa
 `poisson_log1p`(Poisson likelihood with log1p link function);
 `--mean_type` sets the mean function, i.e. `constant` or `zero`;
 `--kern` sets the kernel type, `rbf` or `matern`.
-`--method` can be 
-set to `svgp`, `fixed-dlm`(exact computation if available, otherwise, Monte Carlo estimation), 
-`joint-dlm`, `fixed-dlm-ps`(product sampling), `joint-dlm-ps`;
+`--method` can be set to `svgp`, `fixed-dlm`(exact computation or bMC), `joint-dlm`(exact computation or bMC), `fixed-dlm-ps`(product sampling), `joint-dlm-ps`(product sampling);
 `--reg` sets the regularization parameter for KL-regularizer;
 `--auto_select_reg` is set when we want to automatically use validate set to select regularization;
-`--num_samples` sets the number of samples if we want to use biased estimates and is available for all dlm methods.
+`--num_samples` sets the number of samples and is available for all dlm methods, 
+and when `--method` is set to `fixed-dlm` or `joint-dlm`, setting `--num_samples` 0 means exact computation, otherwise biased Monte Carlo samples;
 `--jitter` is set for smooth-bMC in the paper, 0 means no jitter added.
 Below is an example for fixed regularization:
 ```console
