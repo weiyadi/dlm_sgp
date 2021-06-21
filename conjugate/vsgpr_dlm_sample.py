@@ -27,7 +27,7 @@ class VSGPR_DLM_SAMPLE(VSGPR):
             X_sample = Xn[indices]
             y_sample = yn[indices]
             mean, var = self.forward(X_sample, diag=True)  # mean and variance of q(f)
-            eps = torch.randn(self.sample_size, self.batch_size)
+            eps = torch.randn(self.sample_size, self.batch_size, device=Xn.device)
             fs = mean.squeeze() + stable_sqrt(var.squeeze()) * eps
             noise_var = F.softplus(self.free_variance)
             # average = -log_gaussian(y_sample, fs, noise_var).sum(dim=0) / self.sample_size
@@ -36,7 +36,7 @@ class VSGPR_DLM_SAMPLE(VSGPR):
             return -result.sum() * Xn.shape[0] / self.batch_size + self.beta * self.kullback_leibler()
         else:
             mean, var = self.forward(Xn, diag=True)
-            eps = torch.randn(self.sample_size, Xn.shape[0])
+            eps = torch.randn(self.sample_size, Xn.shape[0], device=Xn.device)
             fs = mean.squeeze() + stable_sqrt(var.squeeze()) * eps
             noise_var = F.softplus(self.free_variance)
             log_probs = -0.5 * (LOG_2PI + stable_log(noise_var) + (yn.squeeze() - fs) ** 2 / noise_var)

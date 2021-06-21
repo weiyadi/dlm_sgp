@@ -43,7 +43,7 @@ class SamplerBasic:
                             sample_i) + self.global_logmax_likelihood[i] < l_prob + dist_i.log_prob(sample_i):
                         print("Not passing sanity check, ", self.sample_dist[i].log_prob(sample_i),
                               self.global_logmax_likelihood[i], l_prob, dist_i.log_prob(sample_i))
-                    if torch.log(torch.rand(1)) + self.sample_dist[i].log_prob(sample_i) + \
+                    if torch.log(torch.rand(1, device=sample_i.device)) + self.sample_dist[i].log_prob(sample_i) + \
                             self.global_logmax_likelihood[i] <= l_prob + dist_i.log_prob(sample_i):
                         # print("success")
                         sample[i] = sample_i

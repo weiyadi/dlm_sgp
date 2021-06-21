@@ -74,6 +74,10 @@ def toy_data(n_train, n_test, sort=False):
 def get_base_model(inducing, mean, kernel, likelihood, x_train, y_train, num_opt=1000, tol=1e-4):
     base_model = SGPClassModel(inducing, mean=mean, kern=kernel, learning_inducing=True)
     base_mll = gpytorch.mlls.VariationalELBO(likelihood, base_model, y_train.numel())
+    if torch.cuda.is_available():
+        base_model = base_model.cuda()
+        base_mll = base_mll.cuda()
+        likelihood = likelihood.cuda()
     base_model.train()
     likelihood.train()
     train_model(base_model, base_mll, x_train, y_train, num_opt=num_opt, tol=tol, verbose=False)
@@ -163,11 +167,11 @@ if __name__ == '__main__':
         x_train, y_train, x_test, y_test = load_dataset(args)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    x_train, y_train, x_test, y_test = x_train.to(device), y_train.to(device), x_test.to(device), y_test.to(device)
     # turning y values from {-1, 1} to {0, 1} for classification task.
     # y values remain unchanged for count regression task.
     y_train, y_test = torch.where(y_train == -1, torch.tensor(0., device=device), y_train).squeeze(), torch.where(
         y_test == -1, torch.tensor(0., device=device), y_test).squeeze()
-    x_train, y_train, x_test, y_test = x_train.to(device), y_train.to(device), x_test.to(device), y_test.to(device)
 
     Z = x_train[:NUM_INDUCING]
 
@@ -214,7 +218,10 @@ if __name__ == '__main__':
         else:
             print('No method called ' + args.method)
             raise NotImplementedError
-
+        if torch.cuda.is_available():
+            model = model.cuda()
+            likelihood = likelihood.cuda()
+            mll = mll.cuda()
         model.train()
         likelihood.train()
         train_model(model, mll, x_train, y_train, num_opt=num_opt, tol=tol, verbose=True)
@@ -287,6 +294,8 @@ if __name__ == '__main__':
         else:
             print('No method called ' + args.method)
             raise NotImplementedError
+        models = [model.to(device) for model in models]
+        mlls = [mll.to(device) for mll in mlls]
 
         for (model, mll) in zip(models, mlls):
             model.train()

@@ -86,10 +86,10 @@ def plot_1d_results(dataset, mean, std, title=None, name=None):
     :mean: Mean of predictive Gaussian distribution.
     :std: Standard deviation of predictive Gaussian distribution.
     """
-    dataset = [tensor.numpy().ravel() for tensor in dataset]
+    dataset = [tensor.cpu().numpy().ravel() for tensor in dataset]
     xn, yn, xt, ft = dataset
 
-    mean, std = mean.numpy().ravel(), std.numpy().ravel()
+    mean, std = mean.cpu().numpy().ravel(), std.cpu().numpy().ravel()
     lower = mean - 2.0 * std
     upper = mean + 2.0 * std
 

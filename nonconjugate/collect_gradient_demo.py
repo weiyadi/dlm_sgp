@@ -86,7 +86,7 @@ def get_gradients(model, x_train, y_train, likelihood, sample_size=0, beta=0.1, 
     loss.backward()
     grads = [p.grad.clone().detach() for p in mll.parameters() if p.requires_grad == True]
     assert len(grads) == 2
-    return grads[0].numpy(), grads[1].numpy()
+    return grads[0].cpu().numpy(), grads[1].cpu().numpy()
 
 
 def plot_all_gradients(grads, true_grad, mll_type):
@@ -125,11 +125,13 @@ Z = x_train[:NUM_INDUCING]
 kernel = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
 mean = gpytorch.means.ConstantMean()
 likelihood = gpytorch.likelihoods.BernoulliLikelihood()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+x_train, y_train, Z = x_train.to(device), y_train.to(device), Z.to(device)
 
 base_model = get_base_model(Z, mean, kernel, likelihood, x_train, y_train)
 
 model = SGPClassModel(base_model.variational_strategy.inducing_points, mean=base_model.mean_module,
-                      kern=base_model.covar_module, learning_inducing=False, fix_hyper=True)
+                      kern=base_model.covar_module, learning_inducing=False, fix_hyper=True).to(device)
 
 true_grad = get_gradients(model, x_train, y_train, likelihood, beta=beta)
 

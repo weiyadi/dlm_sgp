@@ -19,7 +19,7 @@ class SamplerPoisson(SamplerBasic):
         self.global_logmax_likelihood = self.likelihood.forward(torch.log(target)).log_prob(self.target)
         max_within_region = torch.where(
             torch.gt(torch.log(target), mean - std) * torch.lt(torch.log(target), mean - std),
-            self.global_logmax_likelihood, -torch.tensor(float('inf')))
+            self.global_logmax_likelihood, -torch.tensor(float('inf'), device=mean.device))
         log_max_likelihood = torch.max(log_max_likelihood, max_within_region)
         for i in range(mean.size(0)):
             if log_max_likelihood[i] > math.log(0.5) + self.global_logmax_likelihood[i]:

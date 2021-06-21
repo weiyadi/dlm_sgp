@@ -5,7 +5,7 @@ import torch
 
 class PoissonExp(_OneDimensionalLikelihood):
     def forward(self, function_samples, **kwargs):
-        rates = torch.exp(function_samples)
+        rates = torch.clamp(torch.exp(function_samples), min=1e-4)
         return base_distributions.Poisson(rate=rates)
 
     def log_marginal(self, observations, function_dist, *args, **kwargs):
@@ -21,7 +21,7 @@ class PoissonExp(_OneDimensionalLikelihood):
 
         return (torch.logsumexp(y_distribution.log_prob(observations), dim=0).sum()
                 - observations.numel() \
-                * torch.log(torch.tensor(float(self.sample_size))))
+                * torch.log(torch.tensor(float(num_samples), device=observations.device)))
 
     def expected_log_prob(self, observations, function_dist, *args, **kwargs):
         mean, var = function_dist.mean, function_dist.variance
